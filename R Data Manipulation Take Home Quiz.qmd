@@ -1,0 +1,67 @@
+---
+title: "R Data Manipulation Take Home Quiz"
+format: html
+editor: visual
+---
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(stringr)
+```
+
+
+```{r}
+data <- read.table("NEJM-withCOVID.txt")
+str(data)
+```
+
+1. Plot a histogram showing the number of articles published per month, with fill color determined by whether there are more than 2 authors
+
+```{r}
+df <- data |>
+  select(Month, numAuthor) |>
+  group_by(Month) |>
+  count(numAuthor > 2)
+```
+
+```{r}
+ggplot(df, aes(x = factor(Month), y = n, fill = `numAuthor > 2`)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Month", y = "count", fill = "numAuthor > 2") +
+  theme_minimal()
+```
+
+
+2. Plot a histogram showing the number of articles published per month and year, with fill color determined by whether there are more than 2 authors
+
+```{r}
+df_2 <- data |>
+  select(Month, Year, numAuthor) |>
+  group_by(Year, Month) |>
+  count(numAuthor > 2) |>
+  mutate(`Month-Year` = paste(Month, Year, sep="-")) # make a new month-year variable
+
+# converting to date format
+df_2$`Month-Year` <- as.Date(paste(df_2$Year, df_2$Month, "01", sep = "-"))
+
+```
+
+```{r}
+ggplot(df_2, aes(x = `Month-Year`, y = n, fill = `numAuthor > 2`)) +
+  geom_bar(stat = "identity") +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +  # Adjust x-axis for better readability
+  labs(x = "Month-Year", y = "count", fill = "numAuthor > 2") +
+  theme_minimal() 
+```
+
+```{r}
+# ggplot(df_2, aes(x = factor(Month-Year), y = n, fill = `numAuthor > 2`)) +
+#   geom_bar(stat = "identity") +
+#   labs(x = "Month", y = "count", fill = "numAuthor > 2") +
+#   theme_minimal()
+```
+
+3. The first names need to be cleaned, they often include the first initial as well. Remove the initials and plot out the most common first names (with more than 30 mentions) in ascending order.
