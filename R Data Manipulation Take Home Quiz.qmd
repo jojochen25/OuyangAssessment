@@ -93,10 +93,17 @@ ggplot(freq_firstName, aes(x = reorder(firstAuthorRem, n), y = n)) +
 
 3. Plot a histogram where the fill is by whether it is the first instance of that first name (Red) or if it has been shown before (Blue). For example, if the first month authors are (Albert, Ben, Carl, David), then all four will be Red, but if the second month authors are (Albert, Ben, Ed, Frank) then half will be Red (Ed and Frank are new) and half will be Blue (Albert and Ben are old).
 
-GO BACK ON THIS
+GO BACK ON THIS --if C Nicholas is first name, do we remove C
 
 ```{r}
 # remove NA's
+# \\b[A-Z](\\.|\\s)?\\b|\\s\\w+ converts H Cody to Cody OR (?<=\\s)[A-Z](\\.|\\s)?\\b|\\s\\w+$ treats it as H
+# Catarina Cardoso--is this Catarina
+# R in Rémi was removed due to the special character using  \\b[A-Z](\\.|\\s)?\\b|\\s\\w+
+# if C Nicholas is first name, do we remove C
+# if we remove nicholas, has to be \\b[A-Z](?=\\s)[\\s]?
+
+# maybe it is the first name (uncleaned)
 num3_df <- data |>
   select(Month, Year, firstAuthorF) |>
   mutate(date = paste(Month, Year, sep="-")) |>
@@ -126,13 +133,14 @@ num3_df |>
 ```
 
 ```{r}
+library(dplyr)
 
 # using the original df with everything (data) or the df from before?
 # create the date variable and get only names in freq_firstname
 
 # this is using the df from before (freq_firstName); maybe not supposed to use df from before
 num3_df <- data |>
-  select(Month, Year, firstAuthorF) |>
+  dplyr::select(Month, Year, firstAuthorF) |>
   mutate(date = paste(Month, Year, sep="-")) |>
   mutate(date = as.Date(paste(Year, Month, "01", sep = "-"))) |>
   mutate(firstAuthorRem=gsub("(?<=\\s)[A-Z](\\.|\\s)?\\b|\\s\\w+$", "", firstAuthorF, perl = TRUE)) |>
@@ -157,14 +165,14 @@ ggplot(num3_df, aes(x = as.factor(date), fill=firstpresentation)) +
 # using the df from before
 # create new col that counts n for all names
 new_firstName<-data |>
-  select(Month, Year, firstAuthorF) |>
+  dplyr::select(Month, Year, firstAuthorF) |>
   mutate(date = paste(Month, Year, sep="-")) |>
   mutate(date = as.Date(paste(Year, Month, "01", sep = "-"))) |>
   mutate(firstAuthorRem=gsub("(?<=\\s)[A-Z](\\.|\\s)?\\b|\\s\\w+$", "", firstAuthorF, perl = TRUE)) |>
   mutate(firstAuthorRem=str_trim(firstAuthorRem)) |> # removes leading and trailing spaces
   count(firstAuthorRem) |>
   filter(n>30 & !is.na(firstAuthorRem)) |>
-  select(date, firstAuhorRem)
+  dplyr::select(date, firstAuhorRem)
 
 
 # firstPresentation is boolean value that marks true for first instance of 
@@ -173,7 +181,7 @@ new_firstName<-data |>
 # but if the second month authors are (Albert, Ben, Ed, Frank) then half will be TRUE (Ed and Frank are new) and half will be FALSE (Albert and Ben are old)
 
 df_2 <- data |>
-  select(Month, Year, numAuthor) |>
+  dplyr::select(Month, Year, numAuthor) |>
   group_by(Year, Month) |>
   count(numAuthor > 2) |>
   mutate(`Month-Year` = paste(Month, Year, sep="-")) # make a new month-year variable
@@ -236,6 +244,8 @@ summary_ave_months<-dates |>
 
 author_df <- num_pubs |>
   full_join(summary_ave_months, by=c("firstAuthorF", "firstAuthorL"))
+
+author_df
 
 
 # # ifelse(n()>2, mean(diff_month, na.rm=TRUE), NaN)
