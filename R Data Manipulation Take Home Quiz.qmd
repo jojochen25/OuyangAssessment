@@ -137,64 +137,6 @@ ggplot(num3_df, aes(x = as.factor(date), fill=firstpresentation)) +
 
 ```
 
-```{r, eval=FALSE}
-library(dplyr)
-
-# using the original df with everything (data) or the df from before?
-# create the date variable and get only names in freq_firstname
-
-# this is using the df from before (freq_firstName); maybe not supposed to use df from before
-num3_df <- data |>
-  select(Month, Year, firstAuthorF) |>
-  mutate(date = paste(Month, Year, sep="-")) |>
-  mutate(date = as.Date(paste(Year, Month, "01", sep = "-"))) |>
-  mutate(firstAuthorRem=gsub("(?<=\\s)[A-Z](\\.|\\s)?\\b|\\s\\w+$", "", firstAuthorF, perl = TRUE)) |>
-  select(firstAuthorRem, date) |> # did not select firstAuthorF, 
-  filter(firstAuthorRem %in% freq_firstName$firstAuthorRem) |>
-  # filter(date >= as.Date("2015-01-01")) |>
-  arrange(date) |>
-  group_by(firstAuthorRem) |>
-  distinct(firstAuthorRem, date, .keep_all = TRUE) |>
-  mutate(firstpresentation = !duplicated(firstAuthorRem)) |>
-  ungroup() |>
-  filter(date=="2015-01-01")# Within each group (author), it checks whether it's the first appearance (not duplicated).
-  # mutate(firstAuthorRem=str_trim(firstAuthorRem)) |>
-  # filter(!is.na(firstAuthorRem)) |>
-  # select(date, firstAuthorRem)
-
-ggplot(num3_df, aes(x = as.factor(date), fill=firstpresentation)) +
-  geom_bar(position="fill") +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
-
-
-# using the df from before
-# create new col that counts n for all names
-new_firstName<-data |>
-  select(Month, Year, firstAuthorF) |>
-  mutate(date = paste(Month, Year, sep="-")) |>
-  mutate(date = as.Date(paste(Year, Month, "01", sep = "-"))) |>
-  mutate(firstAuthorRem=gsub("(?<=\\s)[A-Z](\\.|\\s)?\\b|\\s\\w+$", "", firstAuthorF, perl = TRUE)) |>
-  mutate(firstAuthorRem=str_trim(firstAuthorRem)) |> # removes leading and trailing spaces
-  count(firstAuthorRem) |>
-  filter(n>30 & !is.na(firstAuthorRem)) |>
-  select(date, firstAuhorRem)
-
-
-# firstPresentation is boolean value that marks true for first instance of 
-# name or false if the name has been shown before
-# for example, if the first month authors are (Albert, Ben, Carl, David), firstPresentation is true for all of them
-# but if the second month authors are (Albert, Ben, Ed, Frank) then half will be TRUE (Ed and Frank are new) and half will be FALSE (Albert and Ben are old)
-
-df_2 <- data |>
-  select(Month, Year, numAuthor) |>
-  group_by(Year, Month) |>
-  count(numAuthor > 2) |>
-  mutate(`Month-Year` = paste(Month, Year, sep="-")) # make a new month-year variable
-
-# converting to date format
-df_2$`Month-Year` <- as.Date(paste(df_2$Year, df_2$Month, "01", sep = "-"))
-```
-
 4. Create an author level data frame (ie, one row per author) that tracks the number publications they have in NEJM and average number of months between publications. (-1 if they have only one publication)
 
 Q: Do we calculate average num of months even for authors that only have 2 publications? I still calculated the mean here (for these authors, ave_num_months, num of months btn pubs/1)
