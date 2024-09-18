@@ -1,10 +1,15 @@
 ---
 title: "R Data Manipulation Take Home Quiz"
-format: html
-editor: visual
+format:
+  html:
+    theme: cosmo
+    html-math-method: katex
+    self-contained: true
+execute:
+  echo: false
+  warning: false
+  message: false
 ---
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
 
 ```{r}
 library(ggplot2)
@@ -13,7 +18,7 @@ library(stringr)
 ```
 
 
-```{r}
+```{r, include=FALSE}
 data <- read.table("NEJM-withCOVID.txt")
 str(data)
 ```
@@ -220,17 +225,6 @@ dates<-data |>
   group_by(firstAuthorF, firstAuthorL) |>
   arrange(firstAuthorF, firstAuthorL)
  
-
-# # summary table of average num of months in between publications
-# dates |>
-#   filter(firstAuthorL=="Makkar") |>
-#   mutate(time_diff = date - lag(date)) |>
-#   mutate(diff_month = as.numeric(round(time_diff/30.44))) |> # round to nearest month
-#  # filter(!is.na(diff_month)) |>
-#   summarize(ave_num_months = mean(diff_month, na.rm=TRUE))
-
-# if one pub, ave_num_months=-1
-# checked Eric J Velazquez (2 publications), Eric J Rubin (many)
 summary_ave_months<-dates |>
  # filter(firstAuthorF=="Shantel") |>
  # arrange(date) |>
@@ -247,6 +241,7 @@ author_df <- num_pubs |>
 
 author_df |>
   print(n=50)
+
 ```
 
 5. How can you use the dataset to summarize what are the leading institutions that publish in NEJM
