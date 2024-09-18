@@ -128,6 +128,13 @@ ggplot(num3_df, aes(x = as.factor(date), fill=firstpresentation)) +
   geom_bar(position="fill") +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
+# num3_df |>
+#   filter(date=="2015-01-01") |>
+#   count(firstpresentation) |>
+ # mutate()
+
+
+
 ```
 
 4. Create an author level data frame (ie, one row per author) that tracks the number publications they have in NEJM and average number of months between publications. (-1 if they have only one publication)
@@ -135,6 +142,13 @@ ggplot(num3_df, aes(x = as.factor(date), fill=firstpresentation)) +
 Q: Do we calculate average num of months even for authors that only have 2 publications? I still calculated the mean here (for these authors, ave_num_months, num of months btn pubs/1)
 
 ```{r}
+# data |>
+#   select(firstAuthorF, firstAuthorL, firstAuthorI, Title, Month, Year) |>
+#   mutate(date = paste(Month, Year, sep="-")) |>
+#   mutate(date = as.Date(paste(Year, Month, "01", sep = "-"))) |>
+#   group_by(firstAuthorF, firstAuthorL) |>
+#   count(Title) |>
+#   print(n=50)
 
 #num_pubs gives number of publications for each author
 num_pubs <-data |>
@@ -181,6 +195,10 @@ author_df <- num_pubs |>
 author_df |>
   print(n=50)
 
+# graphite
+# navy denim
+# teal
+# black cuorduroy 22.9
 ```
 
 5. How can you use the dataset to summarize what are the leading institutions that publish in NEJM
