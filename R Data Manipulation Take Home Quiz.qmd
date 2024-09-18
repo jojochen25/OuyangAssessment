@@ -124,9 +124,12 @@ num3_df <- data |>
   ungroup() |>
   filter(date>="2015-01-01" & date <= "2020-07-01") 
 
+#options(repr.plot.width=30, repr.plot.height=6)
 ggplot(num3_df, aes(x = as.factor(date), fill=firstpresentation)) +
   geom_bar(position="fill") +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+ggsave("num_4.jpg", width=15, height=6)
 
 ```
 
