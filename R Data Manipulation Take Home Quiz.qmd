@@ -6,19 +6,19 @@ format:
     html-math-method: katex
     self-contained: true
 execute:
-  echo: false
+  echo: true
   warning: false
   message: false
 ---
 
-```{r}
+```{r, include=FALSE}
 library(ggplot2)
 library(dplyr)
 library(stringr)
 ```
 
 
-```{r, include=FALSE}
+```{r}
 data <- read.table("NEJM-withCOVID.txt")
 str(data)
 ```
@@ -32,7 +32,7 @@ df <- data |>
   count(numAuthor > 2)
 ```
 
-```{r}
+```{r, include=TRUE}
 ggplot(df, aes(x = factor(Month), y = n, fill = `numAuthor > 2`)) +
   geom_bar(stat = "identity") +
   labs(x = "Month", y = "count", fill = "numAuthor > 2")
